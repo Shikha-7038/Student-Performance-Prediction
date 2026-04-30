@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .result.high-risk {
+            background: #fee;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .result.medium-risk {
+            background: #ffeaa7;
+            border-left: 5px solid #f39c12;
+        }
+        
+        .result.low-risk {
+            background: #d5f5e3;
+            border-left: 5px solid #27ae60;
+        }
+        
+        .probability {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .interventions {
+            text-align: left;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .interventions h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .interventions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .interventions li {
+            padding: 5px 0;
+            color: #555;
+        }
+        
+        .batch-section {
+            margin-top: 20px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status.online {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .status.offline {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Student Performance Prediction System</h1>
+        
+        <div class="card">
+            <h2>📊 API Status</h2>
+            <div id="api-status">
+                <span class="status offline">Checking API...</span>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📝 Student Information</h2>
+            <form id="prediction-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Prior GPA (0-4)</label>
+                        <input type="number" id="prior_gpa" step="0.1" value="3.0" min="0" max="4">
+                    </div>
+                    <div class="form-group">
+                        <label>Attendance %</label>
+                        <input type="number" id="attendance_pct" step="0.1" value="85" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Quiz Average</label>
+                        <input type="number" id="quiz_avg" step="0.1" value="75" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Assignment Average</label>
+                        <input type="number" id="assign_avg" step="0.1" value="78" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Midterm Score</label>
+                        <input type="number" id="midterm" step="0.1" value="72" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Study Hours/Week</label>
+                        <input type="number" id="study_hours_wk" step="0.5" value="12" min="0" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label>On-time Submission %</label>
+                        <input type="number" id="on_time_submit_pct" step="0.1" value="80" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>LMS Logins/Week</label>
+                        <input type="number" id="lms_logins_wk" value="10" min="0" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Forum Posts</label>
+                        <input type="number" id="forum_posts" value="3" min="0" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Commute (minutes)</label>
+                        <input type="number" id="commute_min" value="25" min="0" max="180">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="gender">
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>School Type</label>
+                        <select id="school_type">
+                            <option value="Public">Public</option>
+                            <option value="Private">Private</option>
+                            <option value="Charter">Charter</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Parent Education</label>
+                        <select id="parent_edu">
+                            <option value="High School">High School</option>
+                            <option value="Bachelor">Bachelor</option>
+                            <option value="Master">Master</option>
+                            <option value="PhD">PhD</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit">🔮 Predict Performance</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Quick Test Students</h2>
+            <button onclick="testExcellent()">🌟 Excellent Student</button>
+            <button onclick="testAtRisk()">⚠️ At-Risk Student</button>
+            <button onclick="testAverage()">📈 Average Student</button>
+        </div>
+        
+        <div class="footer">
+            <p>Powered by Machine Learning | Student Performance Prediction System</p>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+        
+        async function checkAPI() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                if (response.ok) {
+                    document.getElementById('api-status').innerHTML = '<span class="status online">✅ API Online - Ready for predictions</span>';
+                } else {
+                    document.getElementById('api-status').innerHTML = '<span class="status offline">⚠️ API Error - Please start the server</span>';
+                }
+            } catch (error) {
+                document.getElementById('api-status').innerHTML = '<span class="status offline">❌ API Offline - Run: python src/api.py</span>';
+            }
+        }
+        
+        async function predict(studentData) {
+            try {
+                const response = await fetch(`${API_URL}/predict/with-interventions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(studentData)
+                });
+                
+                if (!response.ok) throw new Error('Prediction failed');
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                return null;
+            }
+        }
+        
+        function displayResult(result) {
+            const resultDiv = document.getElementById('result');
+            const riskLevel = result.risk_level.toLowerCase();
+            const probPercent = (result.risk_probability * 100).toFixed(1);
+            
+            let outcomeText = '';
+            if (result.risk_probability >= 0.7) {
+                outcomeText = '✅ Likely to Pass';
+            } else if (result.risk_probability >= 0.5) {
+                outcomeText = '⚠️ Borderline';
+            } else {
+                outcomeText = '❌ At Risk of Failing';
+            }
+            
+            let html = `
+                <div class="result ${riskLevel}-risk">
+                    <h3>📈 Prediction Result</h3>
+                    <div class="probability">${probPercent}%</div>
+                    <div><strong>${outcomeText}</strong></div>
+                    <div><strong>Risk Level:</strong> ${result.risk_level}</div>
+                    <div><strong>Predicted Outcome:</strong> ${result.predicted_outcome}</div>
+                    <div><strong>Timestamp:</strong> ${result.timestamp}</div>
+                    <div class="interventions">
+                        <h4>🎯 Recommended Interventions:</h4>
+                        <ul>
+                            ${result.interventions.map(i => `<li>${i}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            resultDiv.innerHTML = html;
+        }
+        
+        document.getElementById('prediction-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const studentData = {
+                prior_gpa: parseFloat(document.getElementById('prior_gpa').value),
+                attendance_pct: parseFloat(document.getElementById('attendance_pct').value),
+                quiz_avg: parseFloat(document.getElementById('quiz_avg').value),
+                assign_avg: parseFloat(document.getElementById('assign_avg').value),
+                midterm: parseFloat(document.getElementById('midterm').value),
+                study_hours_wk: parseFloat(document.getElementById('study_hours_wk').value),
+                on_time_submit_pct: parseFloat(document.getElementById('on_time_submit_pct').value),
+                lms_logins_wk: parseInt(document.getElementById('lms_logins_wk').value),
+                forum_posts: parseInt(document.getElementById('forum_posts').value),
+                commute_min: parseInt(document.getElementById('commute_min').value),
+                gender: document.getElementById('gender').value,
+                school_type: document.getElementById('school_type').value,
+                parent_edu: document.getElementById('parent_edu').value
+            };
+            
+            const result = await predict(studentData);
+            if (result) {
+                displayResult(result);
+            } else {
+                document.getElementById('result').innerHTML = '<div class="result high-risk">❌ Error making prediction. Make sure API server is running!</div>';
+            }
+        });
+        
+        function testExcellent() {
+            document.getElementById('prior_gpa').value = 3.8;
+            document.getElementById('attendance_pct').value = 95;
+            document.getElementById('quiz_avg').value = 90;
+            document.getElementById('assign_avg').value = 92;
+            document.getElementById('midterm').value = 88;
+            document.getElementById('study_hours_wk').value = 20;
+            document.getElementById('on_time_submit_pct').value = 98;
+            document.getElementById('lms_logins_wk').value = 20;
+            document.getElementById('forum_posts').value = 10;
+            document.getElementById('commute_min').value = 15;
+            document.getElementById('gender').value = 'F';
+            document.getElementById('school_type').value = 'Private';
+            document.getElementById('parent_edu').value = 'Master';
+            document.getElementById('prediction-form').dispatchEvent(new Event('submit'));
+        }
+        
+        function testAtRisk() {
+            document.getElementById('prior_gpa').value = 1.8;
+            document.getElementById('attendance_pct').value = 55;
+            document.getElementById('quiz_avg').value = 45;
+            document.getElementById('assign_avg').value = 48;
+            document.getElementById('midterm').value = 42;
+            document.getElementById('study_hours_wk').value = 4;
+            document.getElementById('on_time_submit_pct').value = 50;
+            document.getElementById('lms_logins_wk').value = 2;
+            document.getElementById('forum_posts').value = 0;
+            document.getElementById('commute_min').value = 60;
+            document.getElementById('gender').value = 'M';
+            document.getElementById('school_type').value = 'Public';
+            document.getElementById('parent_edu').value = 'High School';
+            document.getElementById('prediction-form').dispatchEvent(new Event('submit'));
+        }
+        
+        function testAverage() {
+            document.getElementById('prior_gpa').value = 2.8;
+            document.getElementById('attendance_pct').value = 78;
+            document.getElementById('quiz_avg').value = 70;
+            document.getElementById('assign_avg').value = 72;
+            document.getElementById('midterm').value = 68;
+            document.getElementById('study_hours_wk').value = 10;
+            document.getElementById('on_time_submit_pct').value = 75;
+            document.getElementById('lms_logins_wk').value = 8;
+            document.getElementById('forum_posts').value = 3;
+            document.getElementById('commute_min').value = 35;
+            document.getElementById('gender').value = 'M';
+            document.getElementById('school_type').value = 'Public';
+            document.getElementById('parent_edu').value = 'Bachelor';
+            document.getElementById('prediction-form').dispatchEvent(new Event('submit'));
+        }
+        
+        // Check API status on load
+        checkAPI();
+        setInterval(checkAPI, 30000);
+    </script>
+</body>
+</html>

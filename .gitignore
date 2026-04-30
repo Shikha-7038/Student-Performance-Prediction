@@ -1,0 +1,54 @@
+# Virtual Environment (CRITICAL - DO NOT COMMIT)
+venv/
+.venv/
+env/
+ENV/
+virtualenv/
+venv.bak/
+env.bak/
+venv/lib/
+venv/include/
+venv/bin/
+venv/Scripts/
+venv/Lib/
+venv/share/
+__pycache__/
+
+# IDE Settings (personal)
+.vscode/
+.idea/
+.vs/
+.codeium/
+
+# OS Junk Files
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.swp
+*.swo
+*~
+._*
+
+# Python Cache
+*.pyc
+*.pyo
+*.pyd
+*.so
+.Python
+
+# Logs (optional - remove # if you want to exclude)
+# *.log
+# logs/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Testing (optional)
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
