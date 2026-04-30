@@ -161,138 +161,10 @@ python src/train.py
 
 # 5. Start the application
 python main.py
-Access the Application
-Once running, open these URLs:
 
-Service	URL	Description
-API Documentation	http://localhost:8000/docs	Interactive API docs (Swagger UI)
-Web Interface	http://localhost:8000/web	User-friendly prediction dashboard
-Health Check	http://localhost:8000/health	System status endpoint
-📡 API Endpoints
-1. Predict Single Student
-bash
-POST /predict
-Content-Type: application/json
-
-{
-  "prior_gpa": 3.2,
-  "attendance_pct": 85.0,
-  "quiz_avg": 78.5,
-  "assign_avg": 82.0,
-  "midterm": 75.0,
-  "study_hours_wk": 15.0,
-  "on_time_submit_pct": 90.0,
-  "lms_logins_wk": 12,
-  "forum_posts": 5,
-  "commute_min": 30,
-  "gender": "M",
-  "school_type": "Public",
-  "parent_edu": "Bachelor"
-}
-Response:
-
-json
-{
-  "risk_probability": 0.8523,
-  "predicted_outcome": "Pass",
-  "risk_level": "Low",
-  "timestamp": "2024-01-15 10:30:00"
-}
-2. Predict with Interventions
-bash
-POST /predict/with-interventions
-# Same payload as above
-Response includes personalized recommendations:
-
-json
-{
-  "risk_probability": 0.3521,
-  "predicted_outcome": "Fail",
-  "risk_level": "High",
-  "interventions": [
-    "⚠️ HIGH RISK - Immediate intervention recommended",
-    "📅 Schedule mandatory attendance counseling session",
-    "👥 Assign peer buddy for accountability",
-    "📚 Enroll in remedial quiz workshops",
-    "⏰ Study skills workshop and schedule planning"
-  ],
-  "timestamp": "2024-01-15 10:30:00"
-}
-3. Batch Prediction
-bash
-POST /predict/batch
-Content-Type: application/json
-
-{
-  "students": [
-    { /* student 1 features */ },
-    { /* student 2 features */ }
-  ]
-}
-4. Health Check
-bash
-GET /health
-Response:
-
-json
-{
-  "status": "healthy",
-  "model_loaded": true,
-  "timestamp": "2024-01-15T10:30:00"
-}
-💻 Usage Examples
-Python Client Example
-python
-import requests
-
-# API endpoint
-url = "http://localhost:8000/predict"
-
-# Student data
-student = {
-    "prior_gpa": 3.5,
-    "attendance_pct": 90.0,
-    "quiz_avg": 85.0,
-    "assign_avg": 88.0,
-    "midterm": 82.0,
-    "study_hours_wk": 18.0,
-    "on_time_submit_pct": 95.0,
-    "lms_logins_wk": 15,
-    "forum_posts": 8,
-    "commute_min": 20,
-    "gender": "F",
-    "school_type": "Private",
-    "parent_edu": "Master"
-}
-
-# Make prediction
-response = requests.post(url, json=student)
-result = response.json()
-
-print(f"Pass Probability: {result['risk_probability']:.1%}")
-print(f"Risk Level: {result['risk_level']}")
-cURL Example
-bash
-curl -X POST "http://localhost:8000/predict" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prior_gpa": 3.2,
-    "attendance_pct": 85,
-    "quiz_avg": 78,
-    "assign_avg": 82,
-    "midterm": 75,
-    "study_hours_wk": 15,
-    "on_time_submit_pct": 90,
-    "lms_logins_wk": 12,
-    "forum_posts": 5,
-    "commute_min": 30,
-    "gender": "M",
-    "school_type": "Public",
-    "parent_edu": "Bachelor"
-  }'
 
 📁 Project Structure
-```
+
 Student-Performance-Prediction/
 │
 ├── 📁 data/                       # Data management
@@ -330,7 +202,7 @@ Student-Performance-Prediction/
 ├── 📄 main.py                     # Application entry point
 ├── 📄 README.md                   # Documentation (this file)
 └── 📄 LICENSE                     # MIT License
-```
+
 
 📊 Visualizations
 After running the system, you'll find these visualizations in the images/ folder:
